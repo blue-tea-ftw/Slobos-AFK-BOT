@@ -463,6 +463,7 @@ function createBot() {
 
     // Handle disconnection
     bot.on('end', (reason) => {
+      clearTimeout(connectionTimeout);
       const wasSpawned = botState.connected;
       console.log(`[Bot] Disconnected: ${reason || 'Unknown reason'}`);
       botState.connected = false;
@@ -478,6 +479,7 @@ function createBot() {
     });
 
     bot.on('kicked', (reason) => {
+      clearTimeout(connectionTimeout);
       const wasSpawned = botState.connected;
       console.log(`[Bot] Kicked: ${reason}`);
       botState.connected = false;
