@@ -332,17 +332,37 @@ function addInterval(callback, delay) {
   return id;
 }
 
+// function getReconnectDelay() {
+//   // Aggressive reconnection: fast, flat delay or very subtle backoff
+//   const baseDelay = config.utils['auto-reconnect-delay'] || 2000;
+//   const maxDelay = config.utils['max-reconnect-delay'] || 15000;
+
+//   // Use a much gentler backoff or just a flat delay if user wants "lower"
+//   // Current logic: attempts * 1000 + base, capped at max
+//   const delay = Math.min(baseDelay + (botState.reconnectAttempts * 1000), maxDelay);
+
+//   return delay;
+// }
+
+
 function getReconnectDelay() {
-  // Aggressive reconnection: fast, flat delay or very subtle backoff
   const baseDelay = config.utils['auto-reconnect-delay'] || 2000;
+  const attempts = botState.reconnectAttempts;
+
+  // After many failures, assume the server is offline/queued or we're being
+  // rate-limited by Aternos — back off to a long interval instead of hammering it
+  if (attempts >= 10) {
+    return 5 * 60 * 1000; // 5 minutes
+  }
+  if (attempts >= 5) {
+    return 60 * 1000; // 1 minute
+  }
   const maxDelay = config.utils['max-reconnect-delay'] || 15000;
-
-  // Use a much gentler backoff or just a flat delay if user wants "lower"
-  // Current logic: attempts * 1000 + base, capped at max
-  const delay = Math.min(baseDelay + (botState.reconnectAttempts * 1000), maxDelay);
-
-  return delay;
+  return Math.min(baseDelay + (attempts * 1000), maxDelay);
 }
+
+
+
 
 function createBot() {
   if (isReconnecting) {
