@@ -882,7 +882,7 @@ process.on('SIGTERM', () => {
   // If we mistakenly exit here, the web server dies. 
   // User asked for "all the time on no matter what".
   // Note: Render will SIGKILL if we don't exit, but this keeps us up as long as possible.
-  process.exit(0);
+  //process.exit(0);
 });
 
 process.on('SIGINT', () => {
